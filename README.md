@@ -1,2 +1,2 @@
 # lazylog
-Git log for lazy asses.
+quick change log for lazy asses.
