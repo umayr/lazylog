@@ -1,6 +1,6 @@
 {
   "name": "lazylog",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "quick change log for lazy asses.",
   "private": false,
   "bin": {
