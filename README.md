@@ -25,7 +25,7 @@ $ lazylog --help
 
 ```
 
-##TODOs
+## TODOs
 
 - Support for formatting.
 - Output to changelog.txt file.
