@@ -1,0 +1,110 @@
+#!/usr/bin/env node
+'use strict';
+
+var program = require('commander');
+var constants = require('../utils/constants');
+var exec = require('child_process').exec;
+var chalk = require('chalk');
+
+var parsers = {
+    regex: function (val) {
+
+        return new RegExp(val, 'i');
+    },
+    number: function (val) {
+        // TODO: Validation.
+        return val;
+    }
+};
+
+program
+    .version('0.0.1')
+    .option('-n, --number <number>', 'number of commits', parsers.number)
+    .option('-A, --author', 'sets author')
+    .option('-f, --format <format>', 'provide custom format for log')
+    .option('-r, --regex <regex>', 'regex to filter log', parsers.regex);
+
+program
+    .on('*', function (name) {
+        console.log('\'' + name + '\' is not a known command. See \'lazylog --help\':');
+        program.outputHelp();
+        process.exit(1);
+    });
+
+program
+    .parse(process.argv);
+
+if (program.args.length < 1) {
+    initiate();
+}
+
+function initiate() {
+    exec('git show', function (err) {
+        if (err !== null) error(err, 'fatal:');
+        command();
+    })
+}
+
+function command() {
+    var number = program.number || constants.NUMBER,
+        format = program.format || constants.FORMAT,
+        cmd = 'git log -n ' + number + ' --pretty="' + format + '"';
+    if (typeof program.regex === 'undefined') error('Thou must provide a regex to match.');
+
+    exec(cmd, function (err, stdout) {
+        if (err !== null) error(err);
+        var commits = stdout.split('\n');
+        commits.pop();
+
+        var matches = parseCommits(commits);
+        var output = parseMatches(matches);
+
+        displayOutput(output);
+
+        process.exit(1);
+    });
+
+    function parseCommits(commits) {
+        var matches = [];
+        for (var i = 0; i < commits.length; i++) {
+            var commit = commits[i];
+            var result = program.regex.test(commit);
+            if (result) {
+                matches.push(commit);
+            }
+        }
+        return matches;
+    }
+
+    function parseMatches(matches) {
+
+        var output = [];
+        for (var i = 0; i < matches.length; i++) {
+            var item = matches[i];
+            var exact = item.match(program.regex)[0];
+            var sha = item.match(constants.SHA1_REGEX)[0];
+            var message = item.toString().split(' ')[1];
+
+            output.push({
+                sha: sha,
+                match: exact,
+                message: message
+            });
+        }
+        return output;
+    }
+
+    function displayOutput(output) {
+        console.log('\n');
+        for (var i = 0; i < output.length; i++) {
+            var result = chalk.bold.underline.magenta(output[i].sha + ':') + ' ' + chalk.white(output[i].match);
+            console.log(result);
+        }
+    };
+}
+
+function error(msg, trim) {
+    if (typeof trim !== 'undefined') msg = (msg + '').split(trim)[1];
+    console.log('\n' + chalk.white.bgRed('Error: ') + chalk.red(msg));
+    process.exit(0);
+}
