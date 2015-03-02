@@ -33,7 +33,7 @@ var parsers = {
 };
 
 program
-    .version('0.0.4')
+    .version('0.0.5')
     .option('-n, --number <number>', 'number of commits', parsers.number)
     .option('-r, --regex <regex>', 'regex to filter log', parsers.regex)
     .option('-S, --since <since>', 'fetch commits from given date', parsers.date)
