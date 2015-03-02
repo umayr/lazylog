@@ -1,28 +1,46 @@
 {
-  "name": "lazylog",
-  "version": "0.0.2",
-  "description": "quick change log for lazy asses.",
-  "private": false,
-  "bin": {
-    "lazylog": "./bin/lazylog"
-  },
-  "scripts": {
-    "test": "mocha -R spec"
-  },
-  "author": {
-    "name": "Umayr Shahid",
-    "email": "umayrr@hotmail.co.uk",
-    "url": "http://umayrshahid.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/umayr/lazylog"
-  },
-  "license": "MIT",
-  "bugs": "https://github.com/umayr/lazylog/issues",
-  "dependencies": {
-    "chalk": "^1.0.0",
-    "commander": "~2.0.0"
-  },
-  "devDependencies": {}
+    "name": "lazylog",
+    "version": "0.0.4",
+    "description": "quick change log for lazy asses.",
+    "private": false,
+    "keywords": [
+        "terminal",
+        "console",
+        "cli",
+        "string",
+        "ansi",
+        "styles",
+        "tty",
+        "formatting",
+        "rgb",
+        "256",
+        "shell",
+        "xterm",
+        "log",
+        "logging",
+        "command-line",
+        "git"
+    ],
+    "bin": {
+        "lazylog": "./bin/lazylog"
+    },
+    "scripts": {
+        "test": "mocha -R spec"
+    },
+    "author": {
+        "name": "Umayr Shahid",
+        "email": "umayrr@hotmail.co.uk",
+        "url": "http://umayrshahid.com"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/umayr/lazylog"
+    },
+    "license": "MIT",
+    "bugs": "https://github.com/umayr/lazylog/issues",
+    "dependencies": {
+        "chalk": "^1.0.0",
+        "commander": "~2.0.0"
+    },
+    "devDependencies": {}
 }
