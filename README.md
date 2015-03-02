@@ -19,8 +19,6 @@ $ lazylog --help
         -h, --help             output usage information
         -V, --version          output the version number
         -n, --number <number>  number of commits
-        -A, --author <author>  sets author
-        -f, --format <format>  provide custom format for log
         -r, --regex <regex>    regex to filter log
 
 ```
