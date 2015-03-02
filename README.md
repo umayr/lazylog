@@ -25,6 +25,10 @@ $ lazylog --help
 
 ```
 
+## Example
+
+![Lazylog Example](http://i.imgur.com/87hh5H8.png "Lazylog Example")
+
 ## TODOs
 
 - Support for formatting.
