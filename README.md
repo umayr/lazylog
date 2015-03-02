@@ -1,5 +1,5 @@
 # lazylog
-quick change log for lazy asses.
+Quick change log for lazy asses.
 
 ## Usage
 
@@ -16,10 +16,12 @@ $ lazylog --help
     
       Options:
     
-        -h, --help             output usage information
-        -V, --version          output the version number
-        -n, --number <number>  number of commits
-        -r, --regex <regex>    regex to filter log
+         -h, --help             output usage information
+         -V, --version          output the version number
+         -n, --number <number>  number of commits
+         -r, --regex <regex>    regex to filter log
+         -S, --since <since>    fetch commits from given date
+         -m, --messages         show complete messages of filtered commits
 
 ```
 
