@@ -8,12 +8,27 @@ var chalk = require('chalk');
 
 var parsers = {
     regex: function (val) {
-
         return new RegExp(val, 'i');
     },
     number: function (val) {
-        // TODO: Validation.
-        return val;
+        return (val > 0) ? val : constants.NUMBER;
+    },
+    date: function (val) {
+        if (typeof val === 'undefined')
+            return val;
+
+        var date = new Date(val);
+        if (!isNaN(date.getTime())) {
+
+            var d = date.getDate(),
+                m = date.getMonth() + 1,
+                y = date.getFullYear();
+
+            return '' + y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
+        }
+        else {
+            return -1;
+        }
     }
 };
 
@@ -22,7 +37,8 @@ program
     .option('-n, --number <number>', 'number of commits', parsers.number)
     .option('-A, --author', 'sets author')
     .option('-f, --format <format>', 'provide custom format for log')
-    .option('-r, --regex <regex>', 'regex to filter log', parsers.regex);
+    .option('-r, --regex <regex>', 'regex to filter log', parsers.regex)
+    .option('-S, --since <since>', 'fetch commits from given date', parsers.date);
 
 program
     .on('*', function (name) {
@@ -46,10 +62,7 @@ function initiate() {
 }
 
 function command() {
-    var number = program.number || constants.NUMBER,
-        format = program.format || constants.FORMAT,
-        cmd = 'git log -n ' + number + ' --pretty="' + format + '"';
-    if (typeof program.regex === 'undefined') error('Thou must provide a regex to match.');
+    var cmd = makeCommand();
 
     exec(cmd, function (err, stdout) {
         if (err !== null) error(err);
@@ -76,6 +89,29 @@ function command() {
         return matches;
     }
 
+    function makeCommand() {
+
+        if (typeof program.regex === 'undefined')
+            error('Thou must provide a regex to match.');
+
+        if (program.since === -1)
+            error('Thou shan\'t pass unless thy provide valid date.');
+
+        var number = program.number || constants.NUMBER,
+            format = program.format || constants.FORMAT,
+            cmd = 'git log ';
+
+        cmd += '--pretty="' + format + '" ';
+
+        if (typeof program.since === 'undefined') {
+            cmd += '-n ' + number;
+        }
+        else {
+            cmd += '--since="' + program.since + '"';
+        }
+        return cmd;
+    }
+
     function parseMatches(matches) {
 
         var output = [];
@@ -96,15 +132,22 @@ function command() {
 
     function displayOutput(output) {
         console.log('\n');
-        for (var i = 0; i < output.length; i++) {
-            var result = chalk.bold.underline.magenta(output[i].sha + ':') + ' ' + chalk.white(output[i].match);
-            console.log(result);
+        if (output.length > 0){
+            for (var i = 0; i < output.length; i++) {
+                var result = chalk.bold.underline.magenta(output[i].sha + ':') + ' ' + chalk.white(output[i].match);
+                console.log(result);
+            }
+            console.log('\n' + chalk.white.bgMagenta('Result:') + ' Total ' + output.length + ' commits are filtered through your query.');
+        }
+        else{
+            console.log(chalk.white.bgRed('POO!') + chalk.red(' No commits to show.'));
+            console.log(chalk.white('You might wanna check your arguments, bro.'));
         }
     };
 }
 
 function error(msg, trim) {
     if (typeof trim !== 'undefined') msg = (msg + '').split(trim)[1];
-    console.log('\n' + chalk.white.bgRed('Error: ') + chalk.red(msg));
+    console.log('\n' + chalk.white.bgRed('Error:') + ' ' + chalk.red((msg + '').trim()));
     process.exit(0);
 }
