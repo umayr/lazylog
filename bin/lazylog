@@ -35,10 +35,9 @@ var parsers = {
 program
     .version('0.0.4')
     .option('-n, --number <number>', 'number of commits', parsers.number)
-    .option('-A, --author', 'sets author')
-    .option('-f, --format <format>', 'provide custom format for log')
     .option('-r, --regex <regex>', 'regex to filter log', parsers.regex)
-    .option('-S, --since <since>', 'fetch commits from given date', parsers.date);
+    .option('-S, --since <since>', 'fetch commits from given date', parsers.date)
+    .option('-m, --messages', 'show complete messages of filtered commits');
 
 program
     .on('*', function (name) {
@@ -119,7 +118,7 @@ function command() {
             var item = matches[i];
             var exact = item.match(program.regex)[0];
             var sha = item.match(constants.SHA1_REGEX)[0];
-            var message = item.toString().split(' ')[1];
+            var message = item.toString().split(sha + ' ')[1];
 
             output.push({
                 sha: sha,
@@ -132,18 +131,27 @@ function command() {
 
     function displayOutput(output) {
         console.log('\n');
-        if (output.length > 0){
+        if (output.length > 0) {
+            var result;
             for (var i = 0; i < output.length; i++) {
-                var result = chalk.bold.underline.magenta(output[i].sha + ':') + ' ' + chalk.white(output[i].match);
+                result = chalk.bold.magenta(output[i].sha + ':') + ' ';
+
+                if(typeof program.messages === 'undefined' ){
+                    result += chalk.white(output[i].match);
+                }
+                else{
+                    result += chalk.white(output[i].message);
+                }
+
                 console.log(result);
             }
-            console.log('\n' + chalk.white.bgMagenta('Result:') + ' Total ' + output.length + ' commits are filtered through your query.');
+            console.log('\n' + chalk.bgMagenta.white('Result:') + chalk.white(' Total ' + output.length + ' commits are filtered through your query.'));
         }
-        else{
+        else {
             console.log(chalk.white.bgRed('POO!') + chalk.red(' No commits to show.'));
             console.log(chalk.white('You might wanna check your arguments, bro.'));
         }
-    };
+    }
 }
 
 function error(msg, trim) {
