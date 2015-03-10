@@ -21,6 +21,7 @@ $ lazylog --help
          -n, --number <number>  number of commits
          -r, --regex <regex>    regex to filter log
          -S, --since <since>    fetch commits from given date
+         -A, --author <author>  fetch commits by given author
          -m, --messages         show complete messages of filtered commits
 
 ```
