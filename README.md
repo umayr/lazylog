@@ -32,7 +32,8 @@ $ lazylog --help
 
 ## TODOs
 
+- ~~Support for multiple Regular Expressions.~~ One could simply write a complex regex, no? 
+- ~~Support to filter given author's commits.~~ Done. ;3
 - Support for formatting.
 - Output to changelog.txt file.
-- Support for multiple Regular Expressions.
-- Support to filter given author's commits.
+
