@@ -37,6 +37,7 @@ program
     .option('-n, --number <number>', 'number of commits', parsers.number)
     .option('-r, --regex <regex>', 'regex to filter log', parsers.regex)
     .option('-S, --since <since>', 'fetch commits from given date', parsers.date)
+    .option('-A, --author <author>', 'fetch commits by given author name')
     .option('-m, --messages', 'show complete messages of filtered commits');
 
 program
@@ -68,8 +69,29 @@ function command() {
         var commits = stdout.split('\n');
         commits.pop();
 
-        var matches = parseCommits(commits);
-        var output = parseMatches(matches);
+        var output, matches;
+
+        if (typeof program.regex !== 'undefined') {
+            matches = parseCommits(commits);
+            output = parseMatches(matches);
+        }
+        else if (typeof program.author !== 'undefined') {
+            var toDisplay;
+
+            if (typeof program.regex === 'undefined') {
+                program.regex = '(.*?)';
+                toDisplay = commits;
+            }
+            else {
+                toDisplay = parseCommits(commits);
+            }
+
+            if (typeof program.messages === 'undefined')
+                program.messages = true;
+
+            output = parseMatches(toDisplay);
+        }
+
 
         displayOutput(output);
 
@@ -90,7 +112,7 @@ function command() {
 
     function makeCommand() {
 
-        if (typeof program.regex === 'undefined')
+        if (typeof program.regex === 'undefined' && typeof program.author === 'undefined')
             error('Thou must provide a regex to match.');
 
         if (program.since === -1)
@@ -108,6 +130,9 @@ function command() {
         else {
             cmd += '--since="' + program.since + '"';
         }
+
+        if (typeof program.author !== 'undefined')
+            cmd += '--author="' + program.author + '"';
         return cmd;
     }
 
@@ -136,10 +161,10 @@ function command() {
             for (var i = 0; i < output.length; i++) {
                 result = chalk.bold.magenta(output[i].sha + ':') + ' ';
 
-                if(typeof program.messages === 'undefined' ){
+                if (typeof program.messages === 'undefined') {
                     result += chalk.white(output[i].match);
                 }
-                else{
+                else {
                     result += chalk.white(output[i].message);
                 }
 
