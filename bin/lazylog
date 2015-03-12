@@ -5,35 +5,11 @@ var program = require('commander');
 var constants = require('../utils/constants');
 var exec = require('child_process').exec;
 var chalk = require('chalk');
-
-var parsers = {
-    regex: function (val) {
-        return new RegExp(val, 'i');
-    },
-    number: function (val) {
-        return (val > 0) ? val : constants.NUMBER;
-    },
-    date: function (val) {
-        if (typeof val === 'undefined')
-            return val;
-
-        var date = new Date(val);
-        if (!isNaN(date.getTime())) {
-
-            var d = date.getDate(),
-                m = date.getMonth() + 1,
-                y = date.getFullYear();
-
-            return '' + y + '-' + (m <= 9 ? '0' + m : m) + '-' + (d <= 9 ? '0' + d : d);
-        }
-        else {
-            return -1;
-        }
-    }
-};
+var parsers = require('../utils/parsers');
+var utils = require('../utils/');
 
 program
-    .version('0.0.65')
+    .version(utils.version())
     .option('-n, --number <number>', 'number of commits', parsers.number)
     .option('-r, --regex <regex>', 'regex to filter log', parsers.regex)
     .option('-S, --since <since>', 'fetch commits from given date', parsers.date)
@@ -91,9 +67,8 @@ function command() {
 
             output = parseMatches(toDisplay);
         }
-
-
         displayOutput(output);
+        writeOutput(output);
 
         process.exit(1);
     });
@@ -122,17 +97,20 @@ function command() {
             format = program.format || constants.FORMAT,
             cmd = 'git log ';
 
-        cmd += '--pretty="' + format + '" ';
+        cmd += '--pretty=format:"%H|-|%an|-|%ad|-|%s" ';
 
         if (typeof program.since === 'undefined') {
-            cmd += '-n ' + number;
+            cmd += '-n ' + number + ' ';
         }
         else {
-            cmd += '--since="' + program.since + '"';
+            cmd += '--since="' + program.since + '" ';
         }
 
         if (typeof program.author !== 'undefined')
-            cmd += '--author="' + program.author + '"';
+            cmd += '--author="' + program.author + '" ';
+
+        cmd += '--date=short';
+
         return cmd;
     }
 
@@ -142,16 +120,51 @@ function command() {
         for (var i = 0; i < matches.length; i++) {
             var item = matches[i];
             var exact = item.match(program.regex)[0];
-            var sha = item.match(constants.SHA1_REGEX)[0];
-            var message = item.toString().split(sha + ' ')[1];
+            var splited = item.split('|-|');
+
+            var sha = splited[0];
+            var author = splited[1];
+            var date = splited[2];
+            var message = splited[3];
 
             output.push({
                 sha: sha,
                 match: exact,
+                author: author,
+                date: date,
                 message: message
             });
         }
         return output;
+    }
+
+    function writeOutput(output) {
+        var data = '';
+
+        data += makeTitle();
+
+        for (var i = 0; i < output.length; i++) {
+            data += output[i].sha + ' ';
+            data += output[i].message + ' ';
+            data += '(' + output[i].author + ')' + '\r\n';
+        }
+        utils.writeFile('change-log.txt', data, function () {
+            console.log('\n' + chalk.bgMagenta.white('Your changes have been logged successfully.'));
+        });
+
+        function makeTitle() {
+            var title = 'Change Log (' + (new Date()).toLocaleDateString() + ')\r\n';
+            var underline = '';
+            for (var i = 0; i < (title.length - 2); i++) {
+                underline += '=';
+            }
+
+            title += underline;
+            title += '\r\n\r\n';
+
+            return title;
+
+        }
     }
 
     function displayOutput(output) {
