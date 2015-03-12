@@ -34,6 +34,6 @@ $ lazylog --help
 
 - ~~Support for multiple Regular Expressions.~~ One could simply write a complex regex, no? 
 - ~~Support to filter given author's commits.~~ Done. ;3
-- Support for formatting.
-- Output to changelog.txt file.
-
+- ~~Output to changelog.txt file.~~ YAY!!
+- More options for writing a change log. (Markdown, maybe? Suggestions!!)
+- Appending change log functionality, right now; it just overwrites the current one.
