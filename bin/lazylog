@@ -43,7 +43,7 @@ function command() {
     exec(cmd, function (err, stdout) {
         if (err !== null) error(err);
         var commits = stdout.split('\n');
-        commits.pop();
+        //commits.pop();
 
         var output, matches;
 
@@ -148,8 +148,9 @@ function command() {
             data += output[i].message + ' ';
             data += '(' + output[i].author + ')' + '\r\n';
         }
+
         utils.writeFile('change-log.txt', data, function () {
-            console.log('\n' + chalk.bgMagenta.white('Your changes have been logged successfully.'));
+            console.log('\n' + chalk.white('Your changes have been logged into a text file successfully.'));
         });
 
         function makeTitle() {
