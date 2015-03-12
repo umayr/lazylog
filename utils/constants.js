@@ -4,8 +4,6 @@
 
 'use strict';
 
-var path = require('path');
-
 module.exports = {
     SHA1_REGEX: /\b([a-f0-9]{40})\b/i,
     NUMBER: 10,
