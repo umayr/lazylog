@@ -94,7 +94,7 @@ function command() {
             error('Thou shan\'t pass unless thy provide valid date.');
 
         var number = program.number || constants.NUMBER,
-            format = program.format || constants.FORMAT,
+            format = constants.FORMAT,
             cmd = 'git log ';
 
         cmd += '--pretty=format:"%H|-|%an|-|%ad|-|%s" ';
