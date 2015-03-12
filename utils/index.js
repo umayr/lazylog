@@ -12,6 +12,7 @@ module.exports = {
         return info.version;
     },
     writeFile: function (filename, data, callback) {
-        fs.writeFileSync(filename, data, 'utf8', callback);
+        fs.writeFileSync(filename, data);
+        callback();
     }
 }
